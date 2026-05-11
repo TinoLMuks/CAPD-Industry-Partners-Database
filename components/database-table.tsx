@@ -388,24 +388,24 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
       </div>
 
       <ScrollArea className="w-full whitespace-nowrap rounded-lg border shadow-sm">
-        <div className="min-w-[1800px]">
+        <div className="min-w-[1800px] max-h-[70vh] overflow-y-auto">
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 z-10 bg-background">
               <TableRow className="bg-primary/5 border-b-2 border-primary/20">
-                <TableHead className="font-semibold w-[180px]">Company/Organisation</TableHead>
-                <TableHead className="font-semibold w-[140px]">Sector</TableHead>
-                <TableHead className="font-semibold w-[140px]">Country/City</TableHead>
-                <TableHead className="font-semibold w-[140px]">Contact Name</TableHead>
-                <TableHead className="font-semibold w-[120px]">Role/Title</TableHead>
-                <TableHead className="font-semibold w-[180px]">Email</TableHead>
-                <TableHead className="font-semibold w-[140px]">Phone</TableHead>
-                <TableHead className="font-semibold w-[140px]">Engagement Type</TableHead>
-                <TableHead className="font-semibold w-[120px]">Last Contact</TableHead>
-                <TableHead className="font-semibold w-[100px]">Method</TableHead>
-                <TableHead className="font-semibold w-[80px]">Status</TableHead>
-                <TableHead className="font-semibold w-[90px]">Strength</TableHead>
-                <TableHead className="font-semibold w-[200px]">Notes</TableHead>
-                <TableHead className="font-semibold w-[100px]">Actions</TableHead>
+                <TableHead className="font-semibold w-[180px] bg-primary/5">Company/Organisation</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Sector</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Country/City</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Contact Name</TableHead>
+                <TableHead className="font-semibold w-[120px] bg-primary/5">Role/Title</TableHead>
+                <TableHead className="font-semibold w-[180px] bg-primary/5">Email</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Phone</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Engagement Type</TableHead>
+                <TableHead className="font-semibold w-[120px] bg-primary/5">Last Contact</TableHead>
+                <TableHead className="font-semibold w-[100px] bg-primary/5">Method</TableHead>
+                <TableHead className="font-semibold w-[80px] bg-primary/5">Status</TableHead>
+                <TableHead className="font-semibold w-[90px] bg-primary/5">Strength</TableHead>
+                <TableHead className="font-semibold w-[200px] bg-primary/5">Notes</TableHead>
+                <TableHead className="font-semibold w-[100px] bg-primary/5">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
