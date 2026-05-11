@@ -390,22 +390,22 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
       <div className="w-full rounded-lg border shadow-sm overflow-auto max-h-[70vh]">
         <div className="min-w-[1800px]">
           <Table>
-            <TableHeader>
-              <TableRow className="border-b-2 border-primary/20">
-                <TableHead className="font-semibold w-[180px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Company/Organisation</TableHead>
-                <TableHead className="font-semibold w-[140px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Sector</TableHead>
-                <TableHead className="font-semibold w-[140px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Country/City</TableHead>
-                <TableHead className="font-semibold w-[140px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Contact Name</TableHead>
-                <TableHead className="font-semibold w-[120px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Role/Title</TableHead>
-                <TableHead className="font-semibold w-[180px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Email</TableHead>
-                <TableHead className="font-semibold w-[140px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Phone</TableHead>
-                <TableHead className="font-semibold w-[140px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Engagement Type</TableHead>
-                <TableHead className="font-semibold w-[120px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Last Contact</TableHead>
-                <TableHead className="font-semibold w-[100px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Method</TableHead>
-                <TableHead className="font-semibold w-[80px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Status</TableHead>
-                <TableHead className="font-semibold w-[90px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Strength</TableHead>
-                <TableHead className="font-semibold w-[200px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Notes</TableHead>
-                <TableHead className="font-semibold w-[100px] sticky top-0 z-10 bg-white dark:bg-zinc-950">Actions</TableHead>
+            <TableHeader className="sticky top-0 z-10 bg-background">
+              <TableRow className="bg-primary/5 border-b-2 border-primary/20">
+                <TableHead className="font-semibold w-[180px] bg-primary/5">Company/Organisation</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Sector</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Country/City</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Contact Name</TableHead>
+                <TableHead className="font-semibold w-[120px] bg-primary/5">Role/Title</TableHead>
+                <TableHead className="font-semibold w-[180px] bg-primary/5">Email</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Phone</TableHead>
+                <TableHead className="font-semibold w-[140px] bg-primary/5">Engagement Type</TableHead>
+                <TableHead className="font-semibold w-[120px] bg-primary/5">Last Contact</TableHead>
+                <TableHead className="font-semibold w-[100px] bg-primary/5">Method</TableHead>
+                <TableHead className="font-semibold w-[80px] bg-primary/5">Status</TableHead>
+                <TableHead className="font-semibold w-[90px] bg-primary/5">Strength</TableHead>
+                <TableHead className="font-semibold w-[200px] bg-primary/5">Notes</TableHead>
+                <TableHead className="font-semibold w-[100px] bg-primary/5">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
