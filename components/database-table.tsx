@@ -74,6 +74,8 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
   const [editData, setEditData] = useState<Partner | null>(null)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [newPartner, setNewPartner] = useState<Omit<Partner, "id">>(emptyPartner)
+  const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const filteredData = data.filter((partner) => {
     const matchesSector = !filters.sector || filters.sector === "all" || partner.sector === filters.sector
@@ -93,83 +95,93 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
     setEditData({ ...partner })
   }
 
+  // ✅ FIXED: now sends UPDATE to Supabase
   const handleSave = async () => {
-  if (!editData) return
+    if (!editData) return
+    setSaving(true)
 
-  const { error } = await supabase
-    .from("partners")
-    .update({
-      company: editData.company,
-      sector: editData.sector,
-      location: editData.location,
-      contactName: editData.contactName,
-      role: editData.role,
-      email: editData.email,
-      phone: editData.phone,
-      engagementType: editData.engagementType,
-      lastContactDate: editData.lastContactDate,
-      preferredContactMethod: editData.preferredContactMethod,
-      status: editData.status,
-      relationshipStrength: editData.relationshipStrength,
-      notes: editData.notes,
-    })
-    .eq("id", editData.id)
+    const { error } = await supabase
+      .from("partners")
+      .update({
+        company: editData.company,
+        sector: editData.sector,
+        location: editData.location,
+        contactName: editData.contactName,
+        role: editData.role,
+        email: editData.email,
+        phone: editData.phone,
+        engagementType: editData.engagementType,
+        lastContactDate: editData.lastContactDate,
+        preferredContactMethod: editData.preferredContactMethod,
+        status: editData.status,
+        relationshipStrength: editData.relationshipStrength,
+        notes: editData.notes,
+      })
+      .eq("id", editData.id)
 
-  if (error) {
-    console.error("SUPABASE UPDATE ERROR:", error)
-    return
+    setSaving(false)
+
+    if (error) {
+      console.error("SUPABASE UPDATE ERROR:", error)
+      alert(`Failed to save changes: ${error.message}`)
+      return
+    }
+
+    onDataChange(data.map((p) => (p.id === editData.id ? editData : p)))
+    setEditingId(null)
+    setEditData(null)
   }
-
-  onDataChange(data.map((p) => (p.id === editData.id ? editData : p)))
-  setEditingId(null)
-  setEditData(null)
-}
 
   const handleCancel = () => {
     setEditingId(null)
     setEditData(null)
   }
 
+  // ✅ FIXED: now sends DELETE to Supabase
   const handleDelete = async (id: string) => {
-  const { error } = await supabase
-    .from("partners")
-    .delete()
-    .eq("id", id)
+    if (!confirm("Are you sure you want to delete this partner?")) return
+    setDeletingId(id)
 
-  if (error) {
-    console.error("SUPABASE DELETE ERROR:", error)
-    return
+    const { error } = await supabase
+      .from("partners")
+      .delete()
+      .eq("id", id)
+
+    setDeletingId(null)
+
+    if (error) {
+      console.error("SUPABASE DELETE ERROR:", error)
+      alert(`Failed to delete partner: ${error.message}`)
+      return
+    }
+
+    onDataChange(data.filter((p) => p.id !== id))
   }
 
-  onDataChange(data.filter((p) => p.id !== id))
-}
   const handleAddNew = async () => {
-  const partner = {
-    ...newPartner,
-    id: generateId(),
+    const partner = {
+      ...newPartner,
+      id: generateId(),
+    }
+
+    const { data: insertedData, error } = await supabase
+      .from("partners")
+      .insert([partner])
+      .select()
+
+    if (error) {
+      console.error("SUPABASE INSERT ERROR:", error)
+      alert(`Failed to add partner: ${error.message}`)
+      return
+    }
+
+    if (insertedData) {
+      onDataChange([...data, ...insertedData])
+    }
+
+    setNewPartner(emptyPartner)
+    setIsAddDialogOpen(false)
   }
-
-  console.log("Saving partner:", partner)
-
-  const { data: insertedData, error } = await supabase
-    .from("partners")
-    .insert([partner])
-    .select()
-
-  if (error) {
-    console.error("SUPABASE INSERT ERROR:", error)
-    return
-  }
-
-  console.log("Inserted successfully:", insertedData)
-
-  if (insertedData) {
-    onDataChange([...data, ...insertedData])
-  }
-
-  setNewPartner(emptyPartner)
-  setIsAddDialogOpen(false)
-}
 
   const getStatusBadge = (status: string) => {
     return (
@@ -401,13 +413,15 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
                 const isEditing = editingId === partner.id
                 const outdated = isContactOutdated(partner.lastContactDate)
                 const missingEmail = !partner.email
+                const isDeleting = deletingId === partner.id
 
                 return (
                   <TableRow
                     key={partner.id}
                     className={cn(
                       outdated && "bg-amber-50 dark:bg-amber-950/20",
-                      missingEmail && "bg-red-50 dark:bg-red-950/20"
+                      missingEmail && "bg-red-50 dark:bg-red-950/20",
+                      isDeleting && "opacity-50"
                     )}
                   >
                     {isEditing && editData ? (
@@ -546,10 +560,15 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-1">
-                            <Button size="sm" onClick={handleSave} className="h-7 bg-primary hover:bg-primary/90 text-primary-foreground">
-                              Save
+                            <Button
+                              size="sm"
+                              onClick={handleSave}
+                              disabled={saving}
+                              className="h-7 bg-primary hover:bg-primary/90 text-primary-foreground"
+                            >
+                              {saving ? "Saving..." : "Save"}
                             </Button>
-                            <Button size="sm" variant="outline" onClick={handleCancel} className="h-7">
+                            <Button size="sm" variant="outline" onClick={handleCancel} className="h-7" disabled={saving}>
                               Cancel
                             </Button>
                           </div>
@@ -589,6 +608,7 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
                               variant="ghost"
                               onClick={() => handleEdit(partner)}
                               className="h-7 w-7 p-0"
+                              disabled={!!deletingId}
                             >
                               <Pencil className="h-4 w-4" />
                             </Button>
@@ -597,6 +617,7 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
                               variant="ghost"
                               onClick={() => handleDelete(partner.id)}
                               className="h-7 w-7 p-0 text-red-500 hover:text-red-700"
+                              disabled={isDeleting}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
