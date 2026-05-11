@@ -27,7 +27,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Pencil, Trash2, Plus, AlertCircle } from "lucide-react"
 import {
   type Partner,
@@ -95,7 +94,6 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
     setEditData({ ...partner })
   }
 
-  // ✅ FIXED: now sends UPDATE to Supabase
   const handleSave = async () => {
     if (!editData) return
     setSaving(true)
@@ -137,7 +135,6 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
     setEditData(null)
   }
 
-  // ✅ FIXED: now sends DELETE to Supabase
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this partner?")) return
     setDeletingId(id)
@@ -387,8 +384,11 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
         </Dialog>
       </div>
 
-      <ScrollArea className="w-full whitespace-nowrap rounded-lg border shadow-sm">
-        <div className="min-w-[1800px] max-h-[70vh] overflow-y-auto">
+      {/* KEY CHANGE: replaced ScrollArea with a plain div that has overflow-auto.
+          This makes sticky headers work correctly because the thead is sticky
+          within the same element that handles the scrolling. */}
+      <div className="w-full rounded-lg border shadow-sm overflow-auto max-h-[70vh]">
+        <div className="min-w-[1800px]">
           <Table>
             <TableHeader className="sticky top-0 z-10 bg-background">
               <TableRow className="bg-primary/5 border-b-2 border-primary/20">
@@ -638,8 +638,7 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
             </TableBody>
           </Table>
         </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </div>
     </div>
   )
 }
