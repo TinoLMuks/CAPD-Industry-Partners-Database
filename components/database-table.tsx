@@ -93,22 +93,68 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
     setEditData({ ...partner })
   }
 
-  const handleSave = () => {
-    if (editData) {
-      onDataChange(data.map((p) => (p.id === editData.id ? editData : p)))
-      setEditingId(null)
-      setEditData(null)
-    }
+  const handleSave = async () => {
+  if (!editData) return
+
+  console.log("Updating:", editData)
+
+  const { data: updated, error } = await supabase
+    .from("partners")
+    .update({
+      company: editData.company,
+      sector: editData.sector,
+      location: editData.location,
+      contactName: editData.contactName,
+      role: editData.role,
+      email: editData.email,
+      phone: editData.phone,
+      engagementType: editData.engagementType,
+      lastContactDate: editData.lastContactDate,
+      preferredContactMethod: editData.preferredContactMethod,
+      status: editData.status,
+      relationshipStrength: editData.relationshipStrength,
+      notes: editData.notes,
+    })
+    .eq("id", editData.id)
+    .select()
+
+  if (error) {
+    console.error("UPDATE ERROR:", error)
+    return
   }
+
+  // update UI with edited data
+  onDataChange(
+    data.map((p) =>
+      p.id === editData.id ? editData : p
+    )
+  )
+
+  setEditingId(null)
+  setEditData(null)
+}
 
   const handleCancel = () => {
     setEditingId(null)
     setEditData(null)
   }
 
-  const handleDelete = (id: string) => {
-    onDataChange(data.filter((p) => p.id !== id))
+  const handleDelete = async (id: string) => {
+  console.log("Deleting:", id)
+
+  const { error } = await supabase
+    .from("partners")
+    .delete()
+    .eq("id", id)
+
+  if (error) {
+    console.error("DELETE ERROR:", error)
+    return
   }
+
+  // update UI after successful delete
+  onDataChange(data.filter((p) => p.id !== id))
+}
 
   const handleAddNew = async () => {
   const partner = {
