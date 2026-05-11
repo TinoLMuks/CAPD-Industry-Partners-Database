@@ -40,6 +40,7 @@ import {
   generateId,
 } from "@/lib/capd-data"
 import { cn } from "@/lib/utils"
+import { supabase } from "@/lib/supabase"
 
 interface DatabaseTableProps {
   data: Partner[]
@@ -109,15 +110,33 @@ export function DatabaseTable({ data, onDataChange, filters }: DatabaseTableProp
     onDataChange(data.filter((p) => p.id !== id))
   }
 
-  const handleAddNew = () => {
-    const partner: Partner = {
-      ...newPartner,
-      id: generateId(),
-    }
-    onDataChange([...data, partner])
-    setNewPartner(emptyPartner)
-    setIsAddDialogOpen(false)
+  const handleAddNew = async () => {
+  const partner = {
+    ...newPartner,
+    id: generateId(),
   }
+
+  console.log("Saving partner:", partner)
+
+  const { data: insertedData, error } = await supabase
+    .from("partners")
+    .insert([partner])
+    .select()
+
+  if (error) {
+    console.error("SUPABASE INSERT ERROR:", error)
+    return
+  }
+
+  console.log("Inserted successfully:", insertedData)
+
+  if (insertedData) {
+    onDataChange([...data, ...insertedData])
+  }
+
+  setNewPartner(emptyPartner)
+  setIsAddDialogOpen(false)
+}
 
   const getStatusBadge = (status: string) => {
     return (
